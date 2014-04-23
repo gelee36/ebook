@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BookReader</string>
+    
+    <string name="add_book">Add book</string>
+    <string name="no_books"><b>No books in your library.</b>\nPlease select any books to add.</string>
+    
+    <string name="import_books">Import Books</string>
+
+</resources>
