@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.gizrak.ebook.controller.BookDbHelper;
 import com.gizrak.ebook.model.BookItem;
+import com.gizrak.ebook.utils.ImageUtils;
 import com.gizrak.ebook.ver2.R;
 
 public class MainActivity extends ListActivity {
@@ -40,6 +41,12 @@ public class MainActivity extends ListActivity {
         // Load books loaded previously
         mAdapter.addAll(mBookDbHelper.getBookList());
         mListView.setAdapter(mAdapter);
+    }
+
+    private void refreshBookList() {
+        mAdapter.clear();
+        mAdapter.addAll(mBookDbHelper.getBookList());
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -68,8 +75,8 @@ public class MainActivity extends ListActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case ACTIVITY_REQUEST_ADD_BOOK:
-                if (resultCode == RESULT_OK && data != null) {
-                    data.getParcelableExtra(Constant.EXTRA_BOOK);
+                if (resultCode == RESULT_OK) {
+                    refreshBookList();
                 }
                 break;
 
@@ -103,7 +110,7 @@ public class MainActivity extends ListActivity {
             }
 
             BookItem item = getItem(position);
-            holder.cover.setImageBitmap(item.getCover());
+            holder.cover.setImageBitmap(ImageUtils.toBitmap(item.getCover()));
             holder.title.setText(item.getTitle());
             holder.author.setText(item.getAuthor());
             return view;

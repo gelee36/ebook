@@ -7,5 +7,6 @@
     <string name="no_books"><b>No books in your library.</b>\nPlease select any books to add.</string>
     
     <string name="import_books">Import Books</string>
+    <string name="done">Done</string>
 
 </resources>

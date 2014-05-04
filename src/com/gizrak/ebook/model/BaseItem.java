@@ -16,6 +16,10 @@ public class BaseItem implements Parcelable {
         mId = id;
     }
 
+    public String getId() {
+        return mId;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o instanceof BaseItem &&

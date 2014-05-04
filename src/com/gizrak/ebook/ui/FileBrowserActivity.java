@@ -5,14 +5,22 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.gizrak.ebook.controller.BookDbHelper;
+import com.gizrak.ebook.model.BookItem;
+import com.gizrak.ebook.utils.EpubParser;
 import com.gizrak.ebook.utils.FileUtils;
+import com.gizrak.ebook.ver2.R;
+import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -25,7 +33,9 @@ public class FileBrowserActivity extends ListActivity {
     private FileListAdapter mAdapter;
     private File mCurrentDir;
 
-    private static final FileFilter mFileFilter = new FileFilter() {
+    private final ArrayList<File> mSelectedList = new ArrayList<File>();
+
+    private static final FileFilter sFileFilter = new FileFilter() {
 
         @Override
         public boolean accept(File pathname) {
@@ -38,7 +48,7 @@ public class FileBrowserActivity extends ListActivity {
             // Filters not support files
             if (pathname.isDirectory() ||
                     FileUtils.SUPPORT_FILE_LIST.contains(
-                            FileUtils.getFileExtension(pathname.getName()))) {
+                            Files.getFileExtension(pathname.getName()))) {
                 return true;
             }
             return false;
@@ -59,15 +69,52 @@ public class FileBrowserActivity extends ListActivity {
         loadFileList(Environment.getExternalStorageDirectory());
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.import_books, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.done:
+                BookDbHelper helper = new BookDbHelper(this);
+                for (File file : mSelectedList) {
+                    BookItem book = EpubParser.parse(file);
+                    helper.importBook(book);
+                }
+                setResult(RESULT_OK);
+                finish();
+                break;
+
+            default:
+                break;
+        }
+        return true;
+    }
+
     private void loadFileList(File dir) {
+        // Store selected files
+        SparseBooleanArray array = getListView().getCheckedItemPositions();
+        for (int i = 0, size = array.size(); i < size; i++) {
+            int position = array.keyAt(i);
+            if (array.get(position, false)) {
+                File file = mAdapter.getItem(position);
+                mSelectedList.add(file);
+            }
+        }
+        getListView().clearChoices();
+        mAdapter.clear();
+
+        // refresh file list
         mCurrentDir = dir;
-        ArrayList<File> files = new ArrayList<File>(Arrays.asList(mCurrentDir
-                .listFiles(mFileFilter)));
+        File[] list = mCurrentDir.listFiles(sFileFilter);
+        ArrayList<File> files = new ArrayList<File>(list != null ? Arrays.asList(list) : null);
         Collections.sort(files);
         if (mCurrentDir.getParentFile() != null) {
             files.add(0, new File(".."));
         }
-        mAdapter.clear();
         mAdapter.addAll(files);
         mAdapter.notifyDataSetChanged();
     }
@@ -78,9 +125,11 @@ public class FileBrowserActivity extends ListActivity {
         if (file.getName().equals("..")) {
             // load file list of selected file's parent
             loadFileList(mCurrentDir.getParentFile());
+            l.setItemChecked(position, false);
         } else if (file.isDirectory()) {
             // load file list of selected file
             loadFileList(file);
+            l.setItemChecked(position, false);
         }
     }
 

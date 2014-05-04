@@ -7,6 +7,10 @@ public class BookConstract {
     private BookConstract() {
     }
 
+    public static final String TABLE_BOOK = "book";
+    public static final String TABLE_TOC = "toc";
+    public static final String TABLE_BOOKMARK = "bookmark";
+
     public static class BookColumns implements BaseColumns {
         private BookColumns() {
         }
@@ -29,7 +33,7 @@ public class BookConstract {
         }
 
         public static final String BID = "toc_book_id";
-        public static final String SEQ = "toc_seq";
+        public static final String ORDER = "toc_order";
         public static final String TITLE = "toc_title";
         public static final String URL = "toc_url";
         public static final String ANCHOR = "toc_anchor";
