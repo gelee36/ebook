@@ -27,6 +27,10 @@
         <activity
             android:name="com.gizrak.ebook.ui.FileBrowserActivity"
             android:label="@string/import_books" />
+        
+        <activity
+            android:name="com.gizrak.ebook.ui.BookActivity"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar" />
     </application>
 
 </manifest>

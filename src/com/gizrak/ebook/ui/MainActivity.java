@@ -85,6 +85,13 @@ public class MainActivity extends ListActivity {
         }
     }
 
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        Intent intent = new Intent(this, BookActivity.class);
+        intent.putExtra(Constant.EXTRA_BOOK, mAdapter.getItem(position));
+        startActivity(intent);
+    }
+
     private static class BookListAdapter extends ArrayAdapter<BookItem> {
 
         private LayoutInflater mLayoutInflater;

@@ -2,8 +2,10 @@
 package com.gizrak.ebook.model;
 
 import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BookItem extends BaseItem {
     private static final String TAG = "BookItem";
@@ -20,7 +22,7 @@ public class BookItem extends BaseItem {
 
     private String mTocFilePath;
 
-    private ArrayList<ChapterItem> mToc;
+    private List<ChapterItem> mToc;
 
     public enum Type {
         EPUB(0),
@@ -134,7 +136,7 @@ public class BookItem extends BaseItem {
         mTocFilePath = path;
     }
 
-    public ArrayList<ChapterItem> getToc() {
+    public List<ChapterItem> getToc() {
         return mToc;
     }
 
@@ -142,7 +144,46 @@ public class BookItem extends BaseItem {
         mToc = list;
     }
 
-    private BookItem(Parcel source) {
-        super(source);
+    private BookItem(Parcel src) {
+        super(src);
+        mType = Type.valueOf(src.readInt());
+        mTitle = src.readString();
+        mAuthor = src.readString();
+        mPublisher = src.readString();
+        mIsbn = src.readString();
+        mLanguage = src.readString();
+        mCover = new byte[src.readInt()];
+        src.readByteArray(mCover);
+        mPath = src.readString();
+        mToc = new ArrayList<ChapterItem>();
+        src.readTypedList(mToc, ChapterItem.CREATOR);
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeInt(mType.toInteger());
+        dest.writeString(mTitle);
+        dest.writeString(mAuthor);
+        dest.writeString(mPublisher);
+        dest.writeString(mIsbn);
+        dest.writeString(mLanguage);
+        dest.writeInt(mCover.length);
+        dest.writeByteArray(mCover);
+        dest.writeString(mPath);
+        dest.writeTypedList(mToc);
+        // dest.writeParcelableArray(mToc.toArray(new ChapterItem[mToc.size()]),
+        // flags);
+    }
+
+    public static final Parcelable.Creator<BookItem> CREATOR = new Parcelable.Creator<BookItem>() {
+
+        public BookItem createFromParcel(Parcel in) {
+            return new BookItem(in);
+        }
+
+        public BookItem[] newArray(int size) {
+            return new BookItem[size];
+        }
+    };
 }

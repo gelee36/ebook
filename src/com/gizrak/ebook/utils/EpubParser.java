@@ -47,6 +47,7 @@ public class EpubParser {
             // Read book information from opf file
             is = zip.getInputStream(zip.getEntry(path));
             book = readOpf(is, base);
+            book.setPath(file.getAbsolutePath());
             book.setType(Type.EPUB.toInteger());
             is.close();
 

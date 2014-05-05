@@ -14,6 +14,7 @@ import com.gizrak.ebook.model.BookItem;
 import com.gizrak.ebook.model.ChapterItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BookDbHelper extends SQLiteOpenHelper {
 
@@ -107,6 +108,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
     }
 
     private ArrayList<ChapterItem> getTocList(String bid) {
+        ArrayList<ChapterItem> list = new ArrayList<ChapterItem>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
@@ -120,7 +122,6 @@ public class BookDbHelper extends SQLiteOpenHelper {
             if (cursor != null) {
                 cursor.moveToFirst();
 
-                ArrayList<ChapterItem> list = new ArrayList<ChapterItem>(cursor.getCount());
                 ChapterItem chapter;
                 do {
                     chapter = new ChapterItem(cursor.getString(cursor
@@ -135,7 +136,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
             if (cursor != null) cursor.close();
             db.close();
         }
-        return null;
+        return list;
     }
 
     public void importBook(BookItem book) {
@@ -152,7 +153,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
             values.put(BookColumns.PATH, book.getPath());
             long id = db.insert(BookConstract.TABLE_BOOK, null, values);
 
-            ArrayList<ChapterItem> list = book.getToc();
+            List<ChapterItem> list = book.getToc();
             for (ChapterItem chapter : list) {
                 values = new ContentValues();
                 values.put(TocColumns.BID, id);

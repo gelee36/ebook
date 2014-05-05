@@ -79,6 +79,8 @@ public class FileBrowserActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.done:
+                storeSelectedFileList();
+
                 BookDbHelper helper = new BookDbHelper(this);
                 for (File file : mSelectedList) {
                     BookItem book = EpubParser.parse(file);
@@ -96,14 +98,7 @@ public class FileBrowserActivity extends ListActivity {
 
     private void loadFileList(File dir) {
         // Store selected files
-        SparseBooleanArray array = getListView().getCheckedItemPositions();
-        for (int i = 0, size = array.size(); i < size; i++) {
-            int position = array.keyAt(i);
-            if (array.get(position, false)) {
-                File file = mAdapter.getItem(position);
-                mSelectedList.add(file);
-            }
-        }
+        storeSelectedFileList();
         getListView().clearChoices();
         mAdapter.clear();
 
@@ -119,17 +114,28 @@ public class FileBrowserActivity extends ListActivity {
         mAdapter.notifyDataSetChanged();
     }
 
+    private void storeSelectedFileList() {
+        SparseBooleanArray array = getListView().getCheckedItemPositions();
+        for (int i = 0, size = array.size(); i < size; i++) {
+            int position = array.keyAt(i);
+            if (array.get(position, false)) {
+                File file = mAdapter.getItem(position);
+                mSelectedList.add(file);
+            }
+        }
+    }
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         File file = mAdapter.getItem(position);
         if (file.getName().equals("..")) {
+            l.setItemChecked(position, false);
             // load file list of selected file's parent
             loadFileList(mCurrentDir.getParentFile());
-            l.setItemChecked(position, false);
         } else if (file.isDirectory()) {
+            l.setItemChecked(position, false);
             // load file list of selected file
             loadFileList(file);
-            l.setItemChecked(position, false);
         }
     }
 

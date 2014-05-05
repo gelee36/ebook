@@ -1,6 +1,9 @@
 
 package com.gizrak.ebook.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 public class ChapterItem extends BaseItem {
     private static final String TAG = "ChapterItem";
 
@@ -35,4 +38,30 @@ public class ChapterItem extends BaseItem {
     public void setContent(String content) {
         mContent = content;
     }
+
+    public ChapterItem(Parcel src) {
+        super(src);
+        mOrder = src.readInt();
+        mLabel = src.readString();
+        mContent = src.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeInt(mOrder);
+        dest.writeString(mLabel);
+        dest.writeString(mContent);
+    }
+
+    public static final Parcelable.Creator<ChapterItem> CREATOR = new Parcelable.Creator<ChapterItem>() {
+
+        public ChapterItem createFromParcel(Parcel in) {
+            return new ChapterItem(in);
+        }
+
+        public ChapterItem[] newArray(int size) {
+            return new ChapterItem[size];
+        }
+    };
 }
